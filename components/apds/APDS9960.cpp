@@ -19,11 +19,8 @@
 #define ACK_VAL    (i2c_ack_type_t)0x0
 #define NACK_VAL   (i2c_ack_type_t)0x1
 
-#include "esp_log.h"
 #include "driver/i2c.h"
-#include "SparkFun_APDS9960.h"
-
-static const char * TAG = "APDS_LIB";
+#include "APDS9960.h"
  
 /**
  * @brief Constructor - Instantiates SparkFun_APDS9960 object
@@ -62,22 +59,17 @@ bool SparkFun_APDS9960::init()
 
     /* Initialize I2C */
     if(!i2cInit()) {
-        ESP_LOGI(TAG, "Error on initialization");
         return false;
     }
      
     /* Read ID register and check against known values for APDS-9960 */
     if( !wireReadDataByte(APDS9960_ID, id) ) {
-        ESP_LOGI(TAG, "Error while reading register ID");
         return false;
     }
     if( !(id == APDS9960_ID_1 || id == APDS9960_ID_2) ) {
-        ESP_LOGI(TAG, "Wrong register ID");
         return false;
     }
-
-    ESP_LOGI(TAG, "register value: %d", id);
-     
+ 
     /* Set ENABLE register to 0 (disable all features) */
     if( !setMode(ALL, OFF) ) {
         return false;
