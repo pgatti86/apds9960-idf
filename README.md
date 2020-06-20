@@ -10,3 +10,11 @@ Note: depending on your python virtualenv version you may encounter an error whi
 To solve simply remove the invalid option (--no-site-packages) from idf_tools.py 
 
 See main.cpp for examples.
+
+| Esp32 Pin | APDS-9960 Board | Function |
+|---|---|---| 
+| 3.3V | VCC | Power |
+| GND | GND | Ground |
+| 23 | SDA | I2C Data |
+| 22 | SCL | I2C Clock |
+| 2 | INT | Interrupt |
