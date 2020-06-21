@@ -1,5 +1,5 @@
 /**
- * @file    SparkFun_APDS-9960.cpp
+ * @file    APDS-9960.cpp
  * @brief   Library for the SparkFun APDS-9960 breakout board
  * @author  Shawn Hymel (SparkFun Electronics)
  *
@@ -2101,9 +2101,9 @@ bool SparkFun_APDS9960::setGestureMode(uint8_t mode)
 bool SparkFun_APDS9960::i2cInit(void) {
     i2c_config_t conf;
     conf.mode = I2C_MODE_MASTER;
-    conf.sda_io_num = (gpio_num_t)23;
+    conf.sda_io_num = (gpio_num_t)CONFIG_SDA;
     conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
-    conf.scl_io_num = (gpio_num_t)22;
+    conf.scl_io_num = (gpio_num_t)CONFIG_SCL;
     conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
     conf.master.clk_speed = 100000;
     ESP_ERROR_CHECK(i2c_param_config(I2C_NUM_1, &conf));

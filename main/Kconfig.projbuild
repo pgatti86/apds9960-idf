@@ -1,0 +1,11 @@
+menu "APDS9960 config"
+
+config SCL
+    int "I2C SCL GPIO"
+	default 22
+
+config SDA
+    int "I2C SDA GPIO"
+	default 23
+	    			
+endmenu

@@ -1,5 +1,5 @@
 /**
- * @file    SparkFun_APDS-9960.h
+ * @file    APDS-9960.h
  * @brief   Library for the SparkFun APDS-9960 breakout board
  * @author  Shawn Hymel (SparkFun Electronics)
  *
