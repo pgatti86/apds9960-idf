@@ -16,12 +16,12 @@
  *   Gesture in progress:   35mA
  */
  
-#define ACK_VAL    (i2c_ack_type_t)0x0
-#define NACK_VAL   (i2c_ack_type_t)0x1
-
-#include "driver/i2c.h"
 #include "APDS9960.h"
+#include "stdlib.h"
+#include "I2cDevice.h"
  
+I2cDevice i2cDevice;
+
 /**
  * @brief Constructor - Instantiates SparkFun_APDS9960 object
  */
@@ -2099,21 +2099,12 @@ bool SparkFun_APDS9960::setGestureMode(uint8_t mode)
  ******************************************************************************/
 
 bool SparkFun_APDS9960::i2cInit(void) {
-    i2c_config_t conf;
-    conf.mode = I2C_MODE_MASTER;
-    conf.sda_io_num = (gpio_num_t)CONFIG_SDA;
-    conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
-    conf.scl_io_num = (gpio_num_t)CONFIG_SCL;
-    conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
-    conf.master.clk_speed = 100000;
-    ESP_ERROR_CHECK(i2c_param_config(I2C_NUM_1, &conf));
-    ESP_ERROR_CHECK(i2c_driver_install(I2C_NUM_1, conf.mode, 0, 0, 0));
-
-    return true;
+   i2cDevice = I2cDevice();
+   return i2cDevice.i2cInit();
 }
 
-void SparkFun_APDS9960::delay(int millis) {
-    vTaskDelay(millis / portTICK_RATE_MS);
+void SparkFun_APDS9960::delay(long millis) {
+   i2cDevice.delay(millis);
 }
 
 /**
@@ -2124,7 +2115,7 @@ void SparkFun_APDS9960::delay(int millis) {
  */
 bool SparkFun_APDS9960::wireWriteByte(uint8_t val)
 {
-    return wireWriteDataBlock(APDS9960_I2C_ADDR, &val, 1);
+    return i2cDevice.writeByte(val);
 }
 
 /**
@@ -2136,7 +2127,7 @@ bool SparkFun_APDS9960::wireWriteByte(uint8_t val)
  */
 bool SparkFun_APDS9960::wireWriteDataByte(uint8_t reg, uint8_t val)
 {
-    return wireWriteDataBlock(reg, &val, 1);
+    return i2cDevice.writeDataByte(reg, val);
 }
 
 /**
@@ -2151,15 +2142,7 @@ bool SparkFun_APDS9960::wireWriteDataBlock( uint8_t reg,
                                         uint8_t *val, 
                                         unsigned int len)
 {
-    esp_err_t ret;
-    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
-    i2c_master_start(cmd);
-    i2c_master_write_byte(cmd, (APDS9960_I2C_ADDR << 1) | I2C_MASTER_WRITE, true);
-    i2c_master_write_byte(cmd, reg, true);
-    i2c_master_write(cmd, val, len, true);
-    ret = i2c_master_cmd_begin(I2C_NUM_1, cmd, 1000 / portTICK_RATE_MS);
-    i2c_cmd_link_delete(cmd);
-    return ret == ESP_OK;
+   return i2cDevice.writeDataBlock(reg, val, len);
 }
 
 /**
@@ -2171,7 +2154,7 @@ bool SparkFun_APDS9960::wireWriteDataBlock( uint8_t reg,
  */
 bool SparkFun_APDS9960::wireReadDataByte(uint8_t reg, uint8_t &val)
 {
-    return wireReadDataBlock(reg, &val, 1) > 0;
+    return i2cDevice.readDataByte(reg, val);
 }
 
 /**
@@ -2186,32 +2169,5 @@ int SparkFun_APDS9960::wireReadDataBlock(uint8_t reg,
                                         uint8_t *val, 
                                         unsigned int len)
 {
-    esp_err_t ret;
-    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
-    i2c_master_start(cmd);
-    i2c_master_write_byte(cmd, (APDS9960_I2C_ADDR << 1) | I2C_MASTER_WRITE, true);
-    i2c_master_write_byte(cmd, reg, true);
-    i2c_master_stop(cmd);
-    ret = i2c_master_cmd_begin(I2C_NUM_1, cmd, 1000 / portTICK_RATE_MS);
-    i2c_cmd_link_delete(cmd);
-    if (ret == ESP_FAIL) {
-        return -1;
-    }
-    cmd = i2c_cmd_link_create();
-    i2c_master_start(cmd);
-    i2c_master_write_byte(cmd, (APDS9960_I2C_ADDR << 1) | I2C_MASTER_READ, true);
-    if (len > 1) {
-        i2c_master_read(cmd, val, len - 1, ACK_VAL);
-        i2c_master_read_byte(cmd, val + len - 1, NACK_VAL);
-    } else {
-        i2c_master_read_byte(cmd, val, NACK_VAL);
-    }
-    i2c_master_stop(cmd);
-    ret = i2c_master_cmd_begin(I2C_NUM_1, cmd, 1000 / portTICK_RATE_MS);
-    i2c_cmd_link_delete(cmd);
-    if (ret == ESP_FAIL) {
-        return -1;
-    }
-
-    return len;
+    return i2cDevice.readDataBlock(reg, val, len);
 }

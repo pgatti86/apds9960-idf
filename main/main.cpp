@@ -35,7 +35,10 @@ extern "C" void app_main()
         ESP_LOGI(TAG, "Something went wrong during APDS-9960 init!");
     }
 
+    // uncomment one of the following functions at a time
     gestureTest(apds);
+    //proximitySensing(apds);
+    //colorSensing(apds);
 }
 
 void gestureTest(SparkFun_APDS9960 &apds) {

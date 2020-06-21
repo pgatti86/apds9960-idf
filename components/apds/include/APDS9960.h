@@ -14,6 +14,8 @@
 #ifndef SparkFun_APDS9960_H
 #define SparkFun_APDS9960_H
 
+#include <stdint.h>
+
 /* Debug */
 #define DEBUG                   0
 
@@ -324,7 +326,7 @@ private:
 
     /* Raw I2C Commands */
     bool i2cInit(void);
-    void delay(int millis);
+    void delay(long millis);
     bool wireWriteByte(uint8_t val);
     bool wireWriteDataByte(uint8_t reg, uint8_t val);
     bool wireWriteDataBlock(uint8_t reg, uint8_t *val, unsigned int len);
