@@ -1,14 +1,13 @@
 /**
- * @file    APDS-9960.h
+ * @file    APDS9960.h
  * @brief   Library for the SparkFun APDS-9960 breakout board
  * @author  Shawn Hymel (SparkFun Electronics)
  *
  * @copyright	This code is public domain but you buy me a beer if you use
  * this and we meet someday (Beerware license).
  *
- * This library interfaces the Avago APDS-9960 to Arduino over I2C. The library
- * relies on the Arduino Wire (I2C) library. to use the library, instantiate an
- * APDS9960 object, call init(), and call the appropriate functions.
+ * This library interfaces the Avago APDS-9960 to Microcontroller over I2C. 
+ * To use the library, instantiate an APDS9960 object, call init(), and call the appropriate functions.
  */
  
 #ifndef SparkFun_APDS9960_H
@@ -16,6 +15,7 @@
 
 #include <stdint.h>
 
+/* Debug */
 /* Debug */
 #define DEBUG                   0
 
@@ -97,6 +97,14 @@
 #define APDS9960_PIEN           0b00100000
 #define APDS9960_GEN            0b01000000
 #define APDS9960_GVALID         0b00000001
+
+/* Status bit fields */
+#define APDS9960_AVALID         0b0000001
+#define APDS9960_PVALID         0b0000010
+#define APDS9960_GINT           0b0000100
+#define APDS9960_AINT           0b0010000
+#define APDS9960_PGSAT          0b0100000
+#define APDS9960_CPSAT          0b1000000
 
 /* On/Off definitions */
 #define OFF                     0
@@ -221,6 +229,7 @@ public:
     SparkFun_APDS9960();
     ~SparkFun_APDS9960();
     bool init();
+    uint8_t getStatusRegister();
     uint8_t getMode();
     bool setMode(uint8_t mode, uint8_t enable);
     

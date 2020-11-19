@@ -1,14 +1,13 @@
 /**
- * @file    APDS-9960.cpp
+ * @file    APDS9960.cpp
  * @brief   Library for the SparkFun APDS-9960 breakout board
  * @author  Shawn Hymel (SparkFun Electronics)
  *
  * @copyright	This code is public domain but you buy me a beer if you use
  * this and we meet someday (Beerware license).
  *
- * This library interfaces the Avago APDS-9960 to Arduino over I2C. The library
- * relies on the Arduino Wire (I2C) library. to use the library, instantiate an
- * APDS9960 object, call init(), and call the appropriate functions.
+ * This library interfaces the Avago APDS-9960 to Microcontroller over I2C. 
+ * To use the library, instantiate an APDS9960 object, call init(), and call the appropriate functions.
  *
  * APDS-9960 current draw tests (default parameters):
  *   Off:                   1mA
@@ -58,7 +57,7 @@ bool SparkFun_APDS9960::init()
     uint8_t id;
 
     /* Initialize I2C */
-    if(!i2cInit()) {
+    if (!i2cInit()) {
         return false;
     }
      
@@ -69,7 +68,7 @@ bool SparkFun_APDS9960::init()
     if( !(id == APDS9960_ID_1 || id == APDS9960_ID_2) ) {
         return false;
     }
- 
+     
     /* Set ENABLE register to 0 (disable all features) */
     if( !setMode(ALL, OFF) ) {
         return false;
@@ -200,6 +199,23 @@ bool SparkFun_APDS9960::init()
 /*******************************************************************************
  * Public methods for controlling the APDS-9960
  ******************************************************************************/
+
+/**
+ * @brief Reads and returns the contents of the STATUS register
+ *
+ * @return Contents of the STATUS register. 0xFF if error.
+ */
+uint8_t SparkFun_APDS9960::getStatusRegister()
+{
+    uint8_t status_value;
+
+    /* Read current ENABLE register */
+    if(!wireReadDataByte(APDS9960_STATUS, status_value) ) {
+        return ERROR;
+    }
+
+    return status_value;
+}
 
 /**
  * @brief Reads and returns the contents of the ENABLE register
@@ -480,7 +496,6 @@ int SparkFun_APDS9960::readGesture()
     
     /* Keep looping as long as gesture data is valid */
     while(1) {
-    
         /* Wait some time to collect next batch of FIFO data */
         delay(FIFO_PAUSE_TIME);
         
@@ -491,7 +506,6 @@ int SparkFun_APDS9960::readGesture()
         
         /* If we have valid data, read in FIFO */
         if( (gstatus & APDS9960_GVALID) == APDS9960_GVALID ) {
-        
             /* Read the current FIFO level */
             if( !wireReadDataByte(APDS9960_GFLVL, fifo_level) ) {
                 return ERROR;

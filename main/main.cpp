@@ -12,8 +12,8 @@ void gestureTest(SparkFun_APDS9960 &apds);
 void proximitySensing(SparkFun_APDS9960 &apds);
 void colorSensing(SparkFun_APDS9960 &apds);
 
-extern "C" void app_main()
-{
+extern "C" void app_main() {
+
     /* Print chip information */
     esp_chip_info_t chip_info;
     esp_chip_info(&chip_info);
@@ -44,14 +44,14 @@ extern "C" void app_main()
 void gestureTest(SparkFun_APDS9960 &apds) {
     
   // Start running the APDS-9960 gesture sensor engine
-  if (apds.enableGestureSensor(false) ) {
+  if (apds.enableGestureSensor(false)) {
     ESP_LOGI(TAG, "Gesture sensor is now running");
   } else {
     ESP_LOGI(TAG, "Something went wrong during gesture sensor init!");
   }
 
   while(1) {
-      if ( apds.isGestureAvailable() ) {
+      if (apds.isGestureAvailable() ) {
         switch ( apds.readGesture() ) {
             case DIR_UP:
                 ESP_LOGI(TAG, "UP");

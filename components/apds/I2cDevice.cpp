@@ -1,11 +1,14 @@
 #include "I2cDevice.h"
 #include "driver/i2c.h"
+#include "esp_log.h"
 
 #define ACK_VAL    (i2c_ack_type_t)0x0
 #define NACK_VAL   (i2c_ack_type_t)0x1
 #define I2C_PORT I2C_NUM_1
 #define I2C_FREQUENCY 100000
 #define APDS_I2C_ADDRESS 0x39
+
+#define DEBUG 0
 
 I2cDevice::I2cDevice() {
 };
@@ -28,6 +31,10 @@ bool I2cDevice::i2cInit(void) {
 }
 
 void I2cDevice::delay(long millis) {
+    #if DEBUG
+        ESP_LOGI("I2C", "delay: %ld", millis);
+    #endif
+    
     vTaskDelay(millis / portTICK_RATE_MS);
 }
 
@@ -36,6 +43,10 @@ bool I2cDevice::writeByte(uint8_t val) {
 }
 
 bool I2cDevice::writeDataByte(uint8_t reg, uint8_t val) {
+    #if DEBUG
+        ESP_LOGI("I2C", "write data %x, to register %x", val, reg);
+    #endif
+    
     return writeDataBlock(reg, &val, 1);
 }
 
@@ -75,6 +86,9 @@ int I2cDevice::readDataBlock(uint8_t reg, uint8_t *val, unsigned int len) {
         i2c_master_read_byte(cmd, val + len - 1, NACK_VAL);
     } else {
         i2c_master_read_byte(cmd, val, NACK_VAL);
+        #if DEBUG
+            ESP_LOGI("I2C", "data read: %x on register %x", *val, reg);
+        #endif
     }
     i2c_master_stop(cmd);
     ret = i2c_master_cmd_begin(I2C_PORT, cmd, 1000 / portTICK_RATE_MS);
