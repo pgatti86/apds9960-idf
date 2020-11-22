@@ -392,37 +392,40 @@ bool SparkFun_APDS9960::enableGestureSensor(bool interrupts)
        Enable PON, WEN, PEN, GEN in ENABLE 
     */
     resetGestureParameters();
-    if( !wireWriteDataByte(APDS9960_WTIME, 0xFF) ) {
+    
+    if (!wireWriteDataByte(APDS9960_WTIME, 0xFF)) {
         return false;
     }
-    if( !wireWriteDataByte(APDS9960_PPULSE, DEFAULT_GESTURE_PPULSE) ) {
+    
+    if (!wireWriteDataByte(APDS9960_PPULSE, DEFAULT_GESTURE_PPULSE)) {
         return false;
     }
-    if( !setLEDBoost(LED_BOOST_300) ) {
+    
+    if (!setGestureIntEnable(interrupts ? 1 : 0)) {
+         return false;
+    }
+
+    if (!setGestureMode(1)) {
         return false;
     }
-    if( interrupts ) {
-        if( !setGestureIntEnable(1) ) {
-            return false;
-        }
-    } else {
-        if( !setGestureIntEnable(0) ) {
-            return false;
-        }
-    }
-    if( !setGestureMode(1) ) {
+
+    if (!enablePower()){
         return false;
     }
-    if( !enablePower() ){
+
+    if (!setMode(WAIT, 1)) {
         return false;
     }
-    if( !setMode(WAIT, 1) ) {
+
+    if (!setMode(PROXIMITY, 1)) {
         return false;
     }
-    if( !setMode(PROXIMITY, 1) ) {
+
+    if (!setMode(GESTURE, 1)) {
         return false;
     }
-    if( !setMode(GESTURE, 1) ) {
+
+    if (!setLEDBoost(LED_BOOST_300)) {
         return false;
     }
     

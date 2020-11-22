@@ -96,9 +96,8 @@ extern "C" void app_main() {
     }
 
     // Start running the APDS-9960 gesture sensor engine
-     ESP_LOGI(TAG, "---ENABLING GESTURE---"); 
+    ESP_LOGI(TAG, "---ENABLING GESTURE---"); 
     if (apds.enableGestureSensor(true) ) {
-        apds.readGesture();
         ESP_LOGI(TAG, "Gesture sensor is now running");
     } else {
         ESP_LOGI(TAG, "Something went wrong during gesture sensor init!");
