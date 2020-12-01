@@ -4,7 +4,7 @@
 #include "esp_system.h"
 #include "esp_spi_flash.h"
 #include "driver/gpio.h"
-#include "freertos/queue.h"
+#include "freertos/semphr.h"
 #include "esp_log.h"
 #include "APDS9960.h"
 
@@ -14,22 +14,19 @@
 
 static const char *TAG = "Interrupt Sample";
 
-static xQueueHandle gpio_evt_queue = NULL;
+SemaphoreHandle_t xSemaphore = NULL;
 
 SparkFun_APDS9960 apds = SparkFun_APDS9960();
 
 void IRAM_ATTR gesture_isr_handler(void* arg) {
-    uint32_t gpio_num = (uint32_t) arg;
-    xQueueSendFromISR(gpio_evt_queue, &gpio_num, NULL);
+    xSemaphoreGiveFromISR(xSemaphore, NULL);
 }
 
 void log_task(void *arg) {
 
-    uint32_t io_num;
-
     while(1) {
          
-        if(xQueueReceive(gpio_evt_queue, &io_num, portMAX_DELAY)) {
+        if (xSemaphoreTake(xSemaphore, portMAX_DELAY)) {
             
             if (apds.isGestureAvailable() ) {
                 switch ( apds.readGesture() ) {
@@ -86,7 +83,7 @@ extern "C" void app_main() {
     gpio_isr_handler_add(interrupt_pin, gesture_isr_handler, NULL);  
 
     ESP_LOGI(TAG, "Configuring event group");  
-    gpio_evt_queue = xQueueCreate(10, sizeof(uint32_t));
+    xSemaphore = xSemaphoreCreateBinary();
     xTaskCreate(log_task, "log_task", 2048, NULL, 5, NULL);
 
     if (apds.init() ) {
